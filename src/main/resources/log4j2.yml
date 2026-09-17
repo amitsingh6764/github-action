@@ -1,0 +1,55 @@
+Configuration:
+  status: warn
+  monitorInterval: 30
+
+  Properties:
+    Property:
+      - name: LOG_PATTERN
+        value: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+      - name: LOG_PATH
+        value: "logs"
+
+  Appenders:
+
+    Console:
+      name: ConsoleAppender
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "${LOG_PATTERN}"
+
+    RollingFile:
+      - name: AppFile
+        fileName: "${LOG_PATH}/docker.log"
+        filePattern: "${LOG_PATH}/docker-%d{yyyy-MM-dd}-%i.log"
+        PatternLayout:
+          pattern: "${LOG_PATTERN}"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: "1MB"
+          TimeBasedTriggeringPolicy:
+            interval: 1
+        DefaultRolloverStrategy:
+          max: 10
+
+  Loggers:
+
+    Logger:
+      - name: org.springframework
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: ConsoleAppender
+          - ref: AppFile
+
+      - name: com.nse.uci
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: ConsoleAppender
+          - ref: AppFile
+
+    Root:
+      level: info
+      AppenderRef:
+        - ref: ConsoleAppender
+        - ref: AppFile
